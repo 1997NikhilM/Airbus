@@ -1,10 +1,28 @@
 pipeline {
     agent any
-
     stages {
-        stage('Hello') {
+        stage('Checkout GITHub') {
             steps {
-                echo 'Hello Airbus'
+                git branch: "main", url: 'https://github.com/1997NikhilM/Airbus.git'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+            sh 'docker build -t hello_airbus .'
+            sh 'docker run -d -p 9000:3000 hello_airbus'    
+            }
+        }
+        stage('Curl and check status') {
+            steps {
+                sleep 3
+                sh 'curl -X GET http://52.66.25.220:9000'
+                sh 'docker stop $(docker ps -q --filter ancestor=hello_airbus)'
+            }
+        }
+        stage('Post results in slack channel') {
+            steps {
+                slackSend color: 'Good', message: 'Pipeline got succeeded'
+                slackSend channel: '#devops', message: "Jenkins build status as ${env.JOB_NAME} ${env.BUILD_NUMBER} - ${env.BUILD_STATUS} ${env.BUILD_URL}"
             }
         }
     }
