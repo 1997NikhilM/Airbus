@@ -16,6 +16,7 @@ pipeline {
             steps {
                 sleep 3
                 sh 'curl -X GET http://52.66.25.220:9000'
+                sh 'curl -o /dev/null -s -w "%{http_code}\n" http://52.66.25.220:9000'
                 sh 'docker stop $(docker ps -q --filter ancestor=hello_airbus)'
             }
         }
