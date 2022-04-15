@@ -15,15 +15,15 @@ pipeline {
         stage('Curl and check status') {
             steps {
                 sleep 3
-                sh 'curl -X GET http://52.66.25.220:9000'
-                sh 'curl -o /dev/null -s -w "%{http_code}\n" http://52.66.25.220:9000'
+                sh 'curl -X GET http://localhost:9000'
+                sh 'curl -o /dev/null -s -w "%{http_code}\n" http://localhost:9000'
                 sh 'docker stop $(docker ps -q --filter ancestor=hello_airbus)'
             }
         }
         stage('Post results in slack channel') {
             steps {
-                slackSend color: 'Good', message: 'Pipeline got succeeded'
-                slackSend channel: '#devops', message: "Jenkins build status as ${env.JOB_NAME} ${env.BUILD_NUMBER} - ${env.BUILD_STATUS} ${env.BUILD_URL}"
+                slackSend color: 'Good', message: 'Hello,'
+                slackSend channel: '#devops', message: "Please find jenkins build status for ${env.JOB_NAME} with build number ${env.BUILD_NUMBER} as ${currentBuild.currentResult} at ${env.BUILD_URL}"
             }
         }
     }
